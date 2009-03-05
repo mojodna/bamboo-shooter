@@ -1,0 +1,13 @@
+jid: client@xmpp-server
+password: password
+pubsub.server: bamboo.mojodna.net
+
+# to run the shooter itself
+component.domain: ubuntu.local
+component.host: ubuntu.local
+component.port: 5288
+component.secret: secret
+component.status: 
+
+# Flickr settings
+flickr.key: <register for an API key>
