@@ -198,22 +198,25 @@ EM.run do
       http = EventMachine::HttpRequest.new('http://api.flickr.com/services/rest/').get(:query => params.merge('panda_name' => panda))
 
       http.callback do
-        doc = REXML::Document.new(http.response)
-        doc.root.each_element do |rsp|
-          total = rsp.attributes["total"].to_s.to_f
-          panda = rsp.attributes["panda"].to_s
-          interval = rsp.attributes["interval"].to_s.to_f
-          interval = interval / total
-          delay = 0.0
+        begin
+          doc = REXML::Document.new(http.response)
+          doc.root.each_element do |rsp|
+            total = rsp.attributes["total"].to_s.to_f
+            panda = rsp.attributes["panda"].to_s
+            interval = rsp.attributes["interval"].to_s.to_f
+            interval = interval / total
+            delay = 0.0
 
-          puts "#{panda} found #{total} items with a #{interval}s delay."
+            puts "#{panda} found #{total} items with a #{interval}s delay."
 
-          rsp.each_element do |node|
-            EventMachine::add_timer(delay) do
-              @shooter.publish("/flickr/pandas/#{CGI.escape(panda)}", node)
+            rsp.each_element do |node|
+              EventMachine::add_timer(delay) do
+                @shooter.publish("/flickr/pandas/#{CGI.escape(panda)}", node)
+              end
+              delay += interval
             end
-            delay += interval
           end
+        rescue REXML::ParseException
         end
       end
     end
